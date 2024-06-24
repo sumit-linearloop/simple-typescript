@@ -1,0 +1,37 @@
+name: SonarQube Analysis
+
+on:
+  push:
+    branches:
+      - main  # Adjust to the branch you want to analyze
+  pull_request:
+    branches:
+      - main  # Adjust to the branch you want to analyze
+
+jobs:
+  sonarqube-analysis:
+    runs-on: ubuntu-latest  # Choose an appropriate runner based on your needs
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK
+        uses: actions/setup-java@v2
+        with:
+          distribution: 'adopt'
+          java-version: '17'  # Adjust Java version as needed
+          architecture: 'x64'
+
+      - name: Load environment variables from .env file
+        run: |
+          set -a
+          [ -f env_file.env ] && . env_file.env
+          set +a
+
+      - name: Run SonarQube Scanner
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ env.SONAR_HOST_URL }}
+        run: |
+          ${SONAR_COMMAND}
