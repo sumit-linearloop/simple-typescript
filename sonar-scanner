@@ -1,2 +1,2 @@
-C:\sonarqube\sonar-scanner-6.0.0.4432-windows\bin\sonar-scanner
+C:\sonarqube\sonar-scanner-6.0.0.4432-windows\bin/
 sonar-scanner.bat -D"sonar.projectKey=aws" -D"sonar.sources=." -D"sonar.host.url=http://localhost:9000" -D"sonar.token=sqp_08606f54d21a31835789d3d76779a8e4156f528a"
