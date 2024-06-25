@@ -3,8 +3,8 @@ name: SonarQube Analysis
 on:
   push:
     branches:
-      - main
-      - dev  # Adjust to the branch you want to analyze
+      - main 
+      - dev # Adjust to the branch you want to analyze
   pull_request:
     branches:
       - main 
