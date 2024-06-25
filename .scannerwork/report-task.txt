@@ -2,5 +2,5 @@ projectKey=aws
 serverUrl=http://localhost:9000
 serverVersion=10.5.1.90531
 dashboardUrl=http://localhost:9000/dashboard?id=aws
-ceTaskId=9db4fe3c-ae77-4c48-a78f-9c502f3c969a
-ceTaskUrl=http://localhost:9000/api/ce/task?id=9db4fe3c-ae77-4c48-a78f-9c502f3c969a
+ceTaskId=869030f5-5eb2-40ca-8283-81ab76886905
+ceTaskUrl=http://localhost:9000/api/ce/task?id=869030f5-5eb2-40ca-8283-81ab76886905
