@@ -1,2 +1,2 @@
 const greeting: string = "Hello, TypeScript!";
-console.log(greeting);qq
+console.log(greeting);qqsumit
