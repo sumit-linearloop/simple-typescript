@@ -1,39 +1,98 @@
-name: SonarQube Analysis
+# name: SonarQube Analysis
+
+# on:
+#   push:
+#     branches:
+#       - main 
+#       - dev # Adjust to the branch you want to analyze
+#   pull_request:
+#     branches:
+#       - main 
+#       - dev # Adjust to the branch you want to analyze
+
+# jobs:
+#   sonarqube-analysis:
+#     runs-on: ubuntu-latest  # Choose an appropriate runner based on your needs
+
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
+
+#       - name: Set up JDK
+#         uses: actions/setup-java@v2
+#         with:
+#           distribution: 'adopt'
+#           java-version: '17'  # Adjust Java version as needed
+#           architecture: 'x64'
+
+#       - name: Load environment variables from .env file
+#         run: |
+#           set -a
+#           [ -f env_file.env ] && . env_file.env
+#           set +a
+
+#       - name: Run SonarQube Scanner
+#         env:
+#           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+#           SONAR_HOST_URL: ${{ env.SONAR_HOST_URL }}
+#         run: |
+#           ${SONAR_COMMAND}
+
+
+
+name: SonarQube Scan
 
 on:
-  push:
-    branches:
-      - main 
-      - dev # Adjust to the branch you want to analyze
   pull_request:
     branches:
-      - main 
-      - dev # Adjust to the branch you want to analyze
+      - main
+      - dev
 
 jobs:
-  sonarqube-analysis:
-    runs-on: ubuntu-latest  # Choose an appropriate runner based on your needs
+  sonarqube:
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Set up JDK
+      - name: Set up JDK 11
         uses: actions/setup-java@v2
         with:
-          distribution: 'adopt'
-          java-version: '17'  # Adjust Java version as needed
-          architecture: 'x64'
+          java-version: '11'
 
-      - name: Load environment variables from .env file
+      - name: Cache SonarQube packages
+        uses: actions/cache@v2
+        with:
+          path: ~/.sonar/cache
+          key: ${{ runner.os }}-sonar
+
+      - name: Cache SonarQube scanner
+        id: cache-sonar-scanner
+        uses: actions/cache@v2
+        with:
+          path: ~/.sonar/scanner
+          key: ${{ runner.os }}-sonar-scanner
+          restore-keys: |
+            ${{ runner.os }}-sonar-scanner
+
+      - name: Install SonarQube scanner
+        if: steps.cache-sonar-scanner.outputs.cache-hit != 'true'
         run: |
-          set -a
-          [ -f env_file.env ] && . env_file.env
-          set +a
+          curl -sSLo sonarscanner.zip https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.6.2.2472-linux.zip
+          unzip -qqo sonarscanner.zip -d ~/.sonar/scanner
+          rm sonarscanner.zip
 
-      - name: Run SonarQube Scanner
+      - name: Add SonarQube scanner to PATH
+        run: echo "${{ github.workspace }}/.sonar/scanner/sonar-scanner-4.6.2.2472-linux/bin" >> $GITHUB_PATH
+
+      - name: SonarQube scan
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          SONAR_HOST_URL: ${{ env.SONAR_HOST_URL }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          ${SONAR_COMMAND}
+          sonar-scanner \
+            -Dsonar.projectKey=aws \
+            -Dsonar.sources=. \
+            -Dsonar.host.url=http://localhost:9000/ \
+            -Dsonar.login=${{ secrets.SONAR_TOKEN }}
